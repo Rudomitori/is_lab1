@@ -1,4 +1,4 @@
-# se_lab_daily_planner
+# is_lab1
 
 ## Project setup
 ```
