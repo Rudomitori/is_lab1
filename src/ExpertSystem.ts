@@ -23,12 +23,14 @@ export interface Rule {
     result: Fact
 }
 
+/** Факт */
 export interface Fact {
     variable: Variable,
     value: PossibleValue,
     type?: FactType
 }
 
+/** Тип факта */
 export enum FactType {
     /** Выведен на основе правил */
     dedicated,
@@ -46,6 +48,7 @@ export enum VariableType {
     both
 }
 
+/** Экспертная система */
 export default class ExpertSystem {
     private readonly variables: Variable[];
     private readonly rules: Rule[];
@@ -72,11 +75,6 @@ export default class ExpertSystem {
         this.variables = variables;
         this.rules = rules;
         this.target = target;
-    }
-
-    /** Попытка получения значения переменной */
-    public tryGetVariableValue(variable: Variable): PossibleValue | null {
-        return this.facts.find(x => x.variable === variable)?.value ?? null;
     }
 
     /** Выполнить попытку применить правило */
@@ -185,6 +183,12 @@ export default class ExpertSystem {
     }
 }
 
+/** Добавить элемент в массив, если такого элемента ещё нет
+ *
+ * @param value Добавляемый элемент
+ * @param array Массив, в который будет произведено добавление
+ * @param comparer Функция сравнения двух элементов
+ */
 function pushIfNotExist<T>(
     value:T,
     array: T[],
@@ -194,6 +198,12 @@ function pushIfNotExist<T>(
     if(typeof existed === 'undefined') array.push(value)
 }
 
+/** Добавить элемент в массив или заменить существующий.
+ *
+ * @param value Добавляемый элемент
+ * @param array Массив, в который будет произведено добавление
+ * @param comparer Функция сравнения двух элементов
+ */
 function replaceOrAdd<T>(
     value:T,
     array: T[],
