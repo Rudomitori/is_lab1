@@ -1,7 +1,7 @@
 <template>
   <div class="container is-max-desktop is-flex is-align-items-center is-flex-direction-column h-100vh" style="width:30em">
       <div class="mt-6 mb-6 has-background-white-ter w-100 p-3">
-          <b-field v-if="systemInitialized" v-for="(fieldSetItem, i) of fieldSet" :key="i" :label="fieldSetItem.variable.question" label-position="on-border">
+          <b-field v-if="systemInitialized" v-for="(fieldSetItem, i) of fieldSet" :key="fieldSetItem.variable.name" :label="fieldSetItem.variable.question" label-position="on-border">
               <b-select :value="(fieldSetItem.value || {name: null}).name" expanded @input="onVariableValueChanged(fieldSetItem.variable, $event)">
                   <option v-for="possibleValue of ([{displayName: '--', name: null}].concat(fieldSetItem.variable.possibleValues))"
                           :value="possibleValue.name">
@@ -52,8 +52,8 @@ export default class App extends Vue {
             type: FactType.entered
         };
 
-        const fact = this.enteredFacts.find(x => x.variable === variable);
-        if(fact) fact.value = newFact.value;
+        const factIndex = this.enteredFacts.findIndex(x => x.variable === variable);
+        if(factIndex !== -1) this.enteredFacts[factIndex] = newFact;
         else this.enteredFacts.push(newFact);
 
         this.system!.addFact(newFact);

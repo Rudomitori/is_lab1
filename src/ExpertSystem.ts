@@ -83,18 +83,11 @@ export default class ExpertSystem {
     private tryApplyRule(rule: Rule): Fact | null {
 
         for (const reason of rule.reasons) {
-            const existedFact = this.facts
-                .find(x => x.variable === reason.variable);
+            const existedFact = this.facts.find(x =>
+                x.variable === reason.variable
+                && x.value === reason.value);
 
-            if(!existedFact) {
-                return null;
-            }
-
-            // Если есть факт, который противоречит факту в посылке
-            // то правило не может сработать и значения остальных
-            // переменных запрашивать не за чем
-            if(existedFact.value !== reason.value)
-                return null;
+            if(!existedFact) return null;
         }
 
         return rule.result;
@@ -113,9 +106,9 @@ export default class ExpertSystem {
                     if (!newFact) continue;
 
                     const canBeAdded = this.facts.every(x =>
-                        x.type === FactType.entered
-                        || x.variable !== newFact.variable
-                        || x.value === newFact.value)
+                        x.variable !== newFact.variable
+                        || x.value === newFact.value
+                        || x.type === FactType.entered)
 
                     if (!canBeAdded) continue;
                     if (newFacts.some(x => x.variable === newFact.variable))
@@ -133,9 +126,8 @@ export default class ExpertSystem {
         this._deleteFact(variable);
         this.updateVariablesToQuery();
     }
-    private _deleteFact(variable: Variable, onlyDeducted: boolean = false) {
-        let fact = this.facts.find(x => x.variable === variable);
-
+    private _deleteFact(variable: Variable, value?: PossibleValue, onlyDeducted: boolean = false) {
+        let fact = this.facts.find(x => x.variable === variable && (!value || x.value === value));
         if (!fact) return;
         if (fact.type === FactType.entered && onlyDeducted) return;
 
@@ -146,7 +138,7 @@ export default class ExpertSystem {
             .filter(x => x.reasons.find(y => y.variable === fact!.variable && y.value === fact!.value));
 
         for (const rule of rules) {
-            this._deleteFact(rule.result.variable, true);
+            this._deleteFact(rule.result.variable, rule.result.value, true);
         }
     }
 
